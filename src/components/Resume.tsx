@@ -41,6 +41,7 @@ export default function Resume() {
           <motion.a 
             href="/resume.pdf" 
             target="_blank"
+            download="Mark_Anthony_Magleo_Resume.pdf"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="inline-flex items-center space-x-3 px-8 py-4 bg-dark-accent text-cream rounded-full hover:bg-blush-800 transition-colors shadow-soft hover:shadow-soft-lg font-medium"
