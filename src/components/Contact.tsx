@@ -1,9 +1,25 @@
+import { useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, MapPin } from 'lucide-react';
 import { portfolioData } from '../data';
 
 export default function Contact() {
   const { contact } = portfolioData;
+  const nextUrl = useMemo(() => {
+    if (typeof window === 'undefined') return '/';
+    return `${window.location.origin}/?sent=1#contact`;
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('sent') !== '1') return;
+    window.alert('Sent message.');
+    params.delete('sent');
+    const query = params.toString();
+    const next = `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash || ''}`;
+    window.history.replaceState({}, '', next);
+  }, []);
 
   return (
     <section id="contact" className="py-24 px-6 md:px-12 bg-cream text-dark">
@@ -68,12 +84,23 @@ export default function Contact() {
           >
             <div className="absolute top-0 left-0 right-0 h-2 bg-[repeating-linear-gradient(45deg,#f6dce2,#f6dce2_10px,transparent_10px,transparent_20px)]"></div>
             
-            <form className="space-y-6 mt-4">
+            <form 
+              action={`https://formsubmit.co/${contact.email}`} 
+              method="POST" 
+              className="space-y-6 mt-4"
+            >
+              <input type="hidden" name="_subject" value="New message from portfolio website!" />
+              <input type="hidden" name="_captcha" value="false" />
+              <input type="hidden" name="_next" value={nextUrl} />
+              <input type="hidden" name="_template" value="table" />
+              
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-dark-muted mb-2">Name</label>
                 <input 
                   type="text" 
                   id="name" 
+                  name="name"
+                  required
                   className="w-full px-4 py-3 rounded-xl border border-blush-100 focus:outline-none focus:ring-2 focus:ring-blush-400 focus:border-transparent transition-shadow bg-cream/30"
                   placeholder="Your Name"
                 />
@@ -83,6 +110,8 @@ export default function Contact() {
                 <input 
                   type="email" 
                   id="email" 
+                  name="email"
+                  required
                   className="w-full px-4 py-3 rounded-xl border border-blush-100 focus:outline-none focus:ring-2 focus:ring-blush-400 focus:border-transparent transition-shadow bg-cream/30"
                   placeholder="hello@example.com"
                 />
@@ -91,6 +120,8 @@ export default function Contact() {
                 <label htmlFor="message" className="block text-sm font-medium text-dark-muted mb-2">Message</label>
                 <textarea 
                   id="message" 
+                  name="message"
+                  required
                   rows={4}
                   className="w-full px-4 py-3 rounded-xl border border-blush-100 focus:outline-none focus:ring-2 focus:ring-blush-400 focus:border-transparent transition-shadow bg-cream/30 resize-none"
                   placeholder="How can we work together?"
